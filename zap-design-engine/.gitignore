@@ -1,0 +1,46 @@
+# Next.js
+.next/
+out/
+build/
+
+# Logs
+*.log
+*_out.txt
+
+# Testing and coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Session-specific files
+CURRENT_TASK.md
+*_errors.txt
+*_log.txt
+tsc_output*.txt
+npm_out*.txt
+vitest_out*.txt
+
+# node_modules
+node_modules/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env*.local
+
+# ZAP Agent
+.gemini/
+.agent/brain/
+node_size.txt
+port_*.txt
+space*.txt
+typescript_info.json
+*.tsbuildinfo
+*.log
+
+# Editor stuff
+.vscode/*
+!.vscode/extensions.json
+.idea/

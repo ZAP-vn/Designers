@@ -1,0 +1,12 @@
+{
+    "framework": "nextjs",
+    "regions": [
+        "sfo1"
+    ],
+    "cleanUrls": true,
+    "git": {
+        "deploymentEnabled": {
+            "main": true
+        }
+    }
+}
