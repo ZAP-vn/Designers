@@ -10,6 +10,7 @@ const getHeaders = (customHeaders: Record<string, string> = {}) => {
         'Content-Type': 'application/json',
         'Accept-Language': 'vi',
         'X-Language': 'vi',
+        'Accept': 'application/json',
         ...customHeaders,
     };
 
