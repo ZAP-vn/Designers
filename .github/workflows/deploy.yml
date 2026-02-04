@@ -29,12 +29,16 @@ jobs:
       - name: Install dependencies
         run: |
           cd zap-design-engine
-          npm install --legacy-peer-deps
+          npm install --force
+
+      - name: Debug - List Files
+        run: |
+          ls -R zap-design-engine
 
       - name: Build with Next.js
         run: |
           cd zap-design-engine
-          npx next build
+          npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
