@@ -8,6 +8,8 @@ import { GoogleGenAI, Type as GeminiType } from "@google/genai";
 import Header from './Header';
 import { ProjectConfig, UiKitData, ThemeState, ProjectFile } from '../types';
 import { ContainerDevWrapper } from './DevDocBanner';
+import { useStore } from '../store';
+import { customerApi } from '../services/customer/customer.service';
 
 interface SetupPageProps {
     onComplete: (config: ProjectConfig) => void;
@@ -248,6 +250,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
     };
 
     const [formData, setFormData] = useState<ProjectConfig>(initialConfig || {
+        merchantName: '',
         projectName: '',
         businessType: '',
         timezone: '',
@@ -256,6 +259,46 @@ const SetupPage: React.FC<SetupPageProps> = ({
         dateFormat: '',
         timeFormat: ''
     });
+
+    const { authData, customerDetail, setCustomerDetail } = useStore();
+
+    useEffect(() => {
+        const fetchCustomerInfo = async () => {
+            if (customerDetail) {
+                // If data exists, just ensure form is hydrated
+                setFormData(prev => ({
+                    ...prev,
+                    merchantName: customerDetail.MerchantName || prev.merchantName,
+                    projectName: customerDetail.BusinessName || prev.projectName,
+                    businessType: customerDetail.BussinessTypeId ? "Finance & Banking" : prev.businessType,
+                    country: customerDetail.Country === 704 ? "Vietnam" : prev.country,
+                    timezone: customerDetail.TimeZoneDisplayName || prev.timezone,
+                    language: customerDetail.LanguageId?.includes('Vietnamese') ? "Vietnamese" : (customerDetail.LanguageId?.includes('English') ? "English" : prev.language)
+                }));
+                return;
+            }
+
+            try {
+                const userGuid = authData?.UserGuid || 'Customer/1';
+                const data = await customerApi.getCustomerDetail(userGuid);
+                setCustomerDetail(data);
+
+                setFormData(prev => ({
+                    ...prev,
+                    merchantName: data.MerchantName || '',
+                    projectName: data.BusinessName || prev.projectName,
+                    businessType: data.BussinessTypeId ? "Finance & Banking" : prev.businessType,
+                    country: data.Country === 704 ? "Vietnam" : "United States",
+                    timezone: data.TimeZoneDisplayName || prev.timezone,
+                    language: data.LanguageId?.includes('Vietnamese') ? "Vietnamese" : "English"
+                }));
+            } catch (err) {
+                console.error("Failed to fetch customer data", err);
+            }
+        };
+
+        fetchCustomerInfo();
+    }, [customerDetail, setCustomerDetail, authData]);
 
     useEffect(() => {
         if (hideHeader && !isExtracting && !readOnly) {
@@ -324,6 +367,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
     const handleSampleData = () => {
         setUseAI(false);
         setFormData({
+            merchantName: "pho24",
             projectName: "Orbit Financial",
             businessType: "Finance & Banking",
             country: "United States",
@@ -548,6 +592,31 @@ const SetupPage: React.FC<SetupPageProps> = ({
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="md:col-span-2">
+                        <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "MerchantNameInput", type: "Field", value: formData.merchantName, filePath: "state.formData.merchantName" }}>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Merchant Name <span className="text-red-500">*</span></label>
+                                <input
+                                    required
+                                    type="text"
+                                    placeholder="e.g. pho24"
+                                    className={`w-full border bg-white outline-none transition-all text-sm font-medium ${readOnly ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+                                    style={{
+                                        padding: `${safeTheme.btnPaddingY}px ${safeTheme.btnPaddingX}px`,
+                                        borderRadius: `${safeTheme.borderRadius}px`,
+                                        color: readOnly ? safeTheme.grayText : safeTheme.darkText,
+                                        ...getFocusStyle('merchantName')
+                                    }}
+                                    value={formData.merchantName}
+                                    onChange={e => setFormData({ ...formData, merchantName: e.target.value })}
+                                    onFocus={() => setFocusedInput('merchantName')}
+                                    onBlur={() => setFocusedInput(null)}
+                                    disabled={isExtracting || readOnly}
+                                />
+                            </div>
+                        </ContainerDevWrapper>
+                    </div>
+
                     <div className="space-y-6">
                         <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "ProjectNameInput", type: "Field", value: formData.projectName, filePath: "state.formData.projectName" }}>
                             <div className="space-y-1.5">

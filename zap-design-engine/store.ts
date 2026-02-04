@@ -23,6 +23,8 @@ interface ZapState {
     docPages: DocPage[];
     isAuthenticated: boolean;
     isSetupComplete: boolean;
+    authData: any | null;
+    customerDetail: any | null;
 
     // Dev Tools
     devTermMode: 'atomic' | 'zap';
@@ -39,6 +41,8 @@ interface ZapState {
     setActiveDocPageId: (id: string | null) => void;
     setIsAuthenticated: (val: boolean) => void;
     setIsSetupComplete: (val: boolean) => void;
+    setAuthData: (data: any | null) => void;
+    setCustomerDetail: (detail: any | null) => void;
 
     // Helpers
     updateComputedTheme: () => void;
@@ -88,6 +92,7 @@ const DEFAULT_THEME: ThemeState = {
 };
 
 const DEFAULT_CONFIG: ProjectConfig = {
+    merchantName: '',
     projectName: '',
     businessType: '',
     timezone: '',
@@ -116,6 +121,8 @@ export const useStore = create<ZapState>()(
             docPages: [],
             isAuthenticated: false,
             isSetupComplete: false,
+            authData: null,
+            customerDetail: null,
 
             // Dev Defaults
             devTermMode: 'atomic',
@@ -157,6 +164,8 @@ export const useStore = create<ZapState>()(
             setActiveDocPageId: (id) => set({ activeDocPageId: id }),
             setIsAuthenticated: (val) => set({ isAuthenticated: val }),
             setIsSetupComplete: (val) => set({ isSetupComplete: val }),
+            setAuthData: (data) => set({ authData: data }),
+            setCustomerDetail: (detail) => set({ customerDetail: detail }),
 
             updateComputedTheme: () => {
                 const { masterConfig, merchantOverride } = get();
@@ -196,6 +205,8 @@ export const useStore = create<ZapState>()(
                 docPages: state.docPages,
                 isSetupComplete: state.isSetupComplete,
                 isAuthenticated: state.isAuthenticated,
+                authData: state.authData,
+                customerDetail: state.customerDetail,
                 devTermMode: state.devTermMode // Persist this preference
             })
         }
