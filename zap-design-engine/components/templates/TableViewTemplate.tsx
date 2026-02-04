@@ -313,7 +313,7 @@ const TableViewTemplate: React.FC<TableViewTemplateProps> = ({ config, themeStat
     const staffStatuses = useMemo(() => ['All', ...Array.from(new Set(staffList.map(s => s.status)))], []);
 
     const filteredRows = useMemo(() => {
-        let filtered = rows;
+        let filtered: any[] = rows;
 
         if (searchQuery) {
             const lowercasedQuery = searchQuery.toLowerCase();

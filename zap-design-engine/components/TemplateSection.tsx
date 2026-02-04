@@ -206,7 +206,8 @@ const TemplateSection: React.FC<TemplateSectionProps> = ({
                                 displayName: activeSection || "Templates",
                                 filePath: "components/TemplateSection.tsx",
                                 parentComponent: "TemplateSection",
-                                htmlTag: "section"
+                                htmlTag: "section",
+                                type: "Region/Zone"
                             },
                             state: {
                                 sourceVar: `config.templateConfig.${(activeSection || 'navbar').toLowerCase().replace(/ & /g, '').replace(/ /g, '')}`,

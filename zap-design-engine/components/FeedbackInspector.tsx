@@ -23,7 +23,7 @@ export const FeedbackInspector: React.FC<FeedbackInspectorProps> = ({
 
     // Helper to safely update nested feedback config
     const updateFeedbackConfig = (section: 'toasts' | 'alerts' | 'modals', key: string, value: any) => {
-        const currentFeedback = config.generatedContent?.feedback || {};
+        const currentFeedback: any = config.generatedContent?.feedback || {};
         const currentSection = currentFeedback[section] || {};
 
         onUpdateConfig({
@@ -97,10 +97,11 @@ export const FeedbackInspector: React.FC<FeedbackInspectorProps> = ({
                         <div className="space-y-4 pt-2">
                             <div className="space-y-2">
                                 <label className="text-xs font-bold text-gray-600">Visual Style</label>
-                                <ToggleGroup
+                                <SegmentControl
+                                    label=""
                                     themeState={themeState}
                                     options={['Standard', 'Callout', 'Banner']}
-                                    defaultValue={alertsConfig.style.charAt(0).toUpperCase() + alertsConfig.style.slice(1)}
+                                    value={alertsConfig.style.charAt(0).toUpperCase() + alertsConfig.style.slice(1)}
                                     onChange={(val) => updateFeedbackConfig('alerts', 'style', val.toLowerCase())}
                                 />
                             </div>

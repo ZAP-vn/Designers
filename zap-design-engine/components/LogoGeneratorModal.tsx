@@ -41,14 +41,14 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
             const projectName = projectConfig.projectName || 'My Brand';
             const industry = projectConfig.businessType || 'General';
             const country = projectConfig.country ? ` based in ${projectConfig.country}` : '';
-            
+
             const defaultPrompt = `Design a professional logo for "${projectName}", a company in the ${industry} industry${country}. ` +
                 `The design should reflect modern aesthetics suitable for this sector. ` +
                 `Primary brand color: ${themeState.primary}, Secondary accent: ${themeState.secondary}. ` +
                 `Style: Minimalist, clean geometric shapes, high contrast, vector style icon, white background.`;
 
             setPrompt(initialPrompt || defaultPrompt);
-            
+
             // Pre-load existing logo if available so "Regenerate" context is clear
             setGeneratedImage(projectConfig.logo?.url || null);
             setTokenUsage(null);
@@ -79,7 +79,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const currentModelConfig = MODELS.find(m => m.id === selectedModel);
-            
+
             let base64Image: string | null = null;
             let mimeType = 'image/png';
 
@@ -94,7 +94,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                         aspectRatio: '1:1',
                     },
                 });
-                
+
                 if (response.generatedImages?.[0]?.image?.imageBytes) {
                     base64Image = response.generatedImages[0].image.imageBytes;
                     mimeType = 'image/jpeg';
@@ -110,10 +110,10 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                 });
 
                 // Extract Image from Gemini Response
-                if (response.candidates && response.candidates[0].content.parts) {
+                if (response.candidates && response.candidates[0]?.content?.parts) {
                     for (const part of response.candidates[0].content.parts) {
                         if (part.inlineData) {
-                            base64Image = part.inlineData.data;
+                            base64Image = part.inlineData.data || null;
                             mimeType = part.inlineData.mimeType || 'image/png';
                             break;
                         }
@@ -151,7 +151,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
     return (
         <div className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-                
+
                 {/* Header */}
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                     <div className="flex items-center gap-2">
@@ -170,14 +170,14 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
 
                 {/* Content */}
                 <div className="p-6 overflow-y-auto">
-                    
+
                     {/* Model Selector */}
                     <div className="mb-4">
                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block flex items-center gap-1">
                             <Settings2 size={12} /> AI Model
                         </label>
                         <div className="relative">
-                            <select 
+                            <select
                                 value={selectedModel}
                                 onChange={(e) => setSelectedModel(e.target.value)}
                                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-medium outline-none focus:border-purple-500 appearance-none cursor-pointer hover:border-gray-300 transition-colors"
@@ -193,7 +193,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                     {/* Prompt Input */}
                     <div className="mb-6">
                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Prompt Description</label>
-                        <textarea 
+                        <textarea
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
                             className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none resize-none h-32 leading-relaxed text-gray-700 placeholder:text-gray-400"
@@ -207,14 +207,14 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                             <div className="absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
                                 <div className="w-16 h-16 relative mb-4">
                                     <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
-                                    <div 
+                                    <div
                                         className="absolute inset-0 rounded-full border-4 border-purple-500 border-t-transparent animate-spin"
                                     ></div>
                                 </div>
                                 <div className="text-sm font-bold text-gray-900 animate-pulse">Generating Assets...</div>
                                 <div className="w-48 h-1.5 bg-gray-100 rounded-full mt-4 overflow-hidden">
-                                    <div 
-                                        className="h-full bg-purple-500 transition-all duration-300 ease-out" 
+                                    <div
+                                        className="h-full bg-purple-500 transition-all duration-300 ease-out"
                                         style={{ width: `${loadingStage}%` }}
                                     ></div>
                                 </div>
@@ -232,7 +232,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                                 <p className="text-sm font-medium">Ready to generate</p>
                             </div>
                         )}
-                        
+
                         {/* Token Usage Overlay (Gemini Only) */}
                         {tokenUsage && !isGenerating && (
                             <div className="absolute top-4 right-4 bg-green-50 text-green-700 border border-green-200 px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-sm flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
@@ -248,7 +248,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                                 </div>
                                 <p className="text-sm font-bold text-red-900 mb-1">Generation Error</p>
                                 <p className="text-xs text-red-600 mb-4">{error}</p>
-                                <button 
+                                <button
                                     onClick={() => setError(null)}
                                     className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-lg transition-colors"
                                 >
@@ -262,7 +262,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
 
                 {/* Footer Actions */}
                 <div className="p-6 border-t border-gray-100 bg-white flex justify-between items-center gap-4">
-                    <button 
+                    <button
                         onClick={handleGenerate}
                         disabled={isGenerating}
                         className="flex-1 py-3 bg-gray-900 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-black transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -270,9 +270,9 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
                         {isGenerating ? 'Designing...' : (generatedImage ? 'Regenerate' : 'Generate Logo')}
                         {!isGenerating && <RefreshCw size={16} />}
                     </button>
-                    
+
                     {generatedImage && (
-                        <button 
+                        <button
                             onClick={() => { onSave(generatedImage); onClose(); }}
                             className="flex-1 py-3 bg-purple-600 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-purple-700 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >

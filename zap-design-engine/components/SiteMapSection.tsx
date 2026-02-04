@@ -629,7 +629,8 @@ const SiteMapSection: React.FC<SiteMapSectionProps> = ({ themeState, docPages = 
                         displayName: "Site Architecture",
                         filePath: "components/SiteMapSection.tsx",
                         parentComponent: "SiteMapSection",
-                        htmlTag: "div"
+                        htmlTag: "div",
+                        type: "Region/Zone"
                     },
                     state: {
                         sourceVar: "STATIC_SITE_NODES",

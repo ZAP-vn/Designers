@@ -226,7 +226,8 @@ const FormsSection: React.FC<FormsSectionProps> = ({ themeState, showClassNames 
                         displayName: "FormsSection",
                         filePath: "components/FormsSection.tsx",
                         parentComponent: "App",
-                        htmlTag: "section"
+                        htmlTag: "section",
+                        type: "Region/Zone"
                     },
                     structure: {
                         structuralRole: "Region/Zone", // Level 4: Zone
