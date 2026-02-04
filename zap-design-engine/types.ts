@@ -186,6 +186,7 @@ export interface TemplateConfig {
 }
 
 export interface ProjectConfig {
+    merchantName: string;
     projectName: string;
     version?: string;
     businessType: string;

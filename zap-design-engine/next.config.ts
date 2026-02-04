@@ -1,10 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    output: 'export',
-    // Ensure critical environment variables are available during build/runtime
-    env: {
-        GOOGLE_GENAI_API_KEY: process.env.GOOGLE_GENAI_API_KEY || '',
+    // Bỏ output: 'export' vì rewrites yêu cầu Next.js server mode
+    async rewrites() {
+        return [
+            {
+                source: '/api-proxy/:path*',
+                destination: 'https://dev-crm-merchant-api.diadiem.vn/:path*',
+            },
+        ];
     },
     images: {
         unoptimized: true
