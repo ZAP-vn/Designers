@@ -77,7 +77,7 @@ export const LogoGeneratorModal: React.FC<LogoGeneratorModalProps> = ({
         setLoadingStage(10);
 
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY });
             const currentModelConfig = MODELS.find(m => m.id === selectedModel);
 
             let base64Image: string | null = null;
