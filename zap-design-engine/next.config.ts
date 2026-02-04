@@ -8,7 +8,10 @@ const nextConfig: NextConfig = {
     },
     images: {
         unoptimized: true
-    }
+    },
+    // Required for GitHub Pages project site deployment
+    basePath: '/Designers',
+    assetPrefix: '/Designers',
 };
 
 export default nextConfig;
