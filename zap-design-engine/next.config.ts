@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     // Required for GitHub Pages project site deployment
     basePath: '/Designers',
     assetPrefix: '/Designers',
+    trailingSlash: true,
 };
 
 export default nextConfig;
