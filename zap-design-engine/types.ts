@@ -174,7 +174,7 @@ export interface TemplateConfig {
         steps?: ReviewStep[];
     };
     tableView?: {
-        dataSource?: 'Promotions' | 'Staff List';
+        dataSource?: 'Promotions' | 'Staff List' | 'Customers';
         showPagination?: boolean;
         showHeader?: boolean;
         showCheckboxes?: boolean;
@@ -183,6 +183,67 @@ export interface TemplateConfig {
         brand?: string;
         copyright?: string;
     };
+}
+
+export interface CustomerDetailResponse {
+    MerchantName: string;
+    BusinessName: string;
+    BussinessTypeId: number;
+    Country: number;
+    CurrencyId: string;
+    CurrencyNativeName: string;
+    CurrencySymbol: string;
+    CustomerCode: string;
+    CustomerId: number;
+    CustomerStatusId: number;
+    Email: string;
+    EmpGuid: string;
+    FirstName: string;
+    InterestGrade: string;
+    LanguageId: string;
+    LastName: string;
+    NotificationId: number;
+    PassCode: string;
+    Password: string;
+    Phone: string;
+    Plural: string;
+    Point: string;
+    ReferenceId: string;
+    Singular: string;
+    StartedDate: string;
+    TimeZoneDisplayName: string;
+    TimeZoneId: string;
+    Url: string;
+    Visible: number;
+    Websites: string;
+    BatchCode: string;
+    PublicKey: string;
+    _id: string;
+    _key: number;
+    _rev: string;
+    CreateDate: string;
+    UpdateDate: string;
+    Version: string;
+}
+
+export interface CustomerListEntry {
+    _id: string;
+    FirstName: string;
+    LastName: string;
+    Email: string;
+    Phone: string;
+    CustomerStatusId: number;
+    InterestGrade: string;
+    CreateDate: string;
+    CustomerCode: string;
+}
+
+export interface PaginatedResponse<T> {
+    data: T[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
 }
 
 export interface ProjectConfig {

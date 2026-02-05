@@ -1,45 +1,5 @@
 import { authService } from '../authService';
-
-export interface CustomerDetailResponse {
-    MerchantName: string;
-    BusinessName: string;
-    BussinessTypeId: number;
-    Country: number;
-    CurrencyId: string;
-    CurrencyNativeName: string;
-    CurrencySymbol: string;
-    CustomerCode: string;
-    CustomerId: number;
-    CustomerStatusId: number;
-    Email: string;
-    EmpGuid: string;
-    FirstName: string;
-    InterestGrade: string;
-    LanguageId: string;
-    LastName: string;
-    NotificationId: number;
-    PassCode: string;
-    Password: string;
-    Phone: string;
-    Plural: string;
-    Point: string;
-    ReferenceId: string;
-    Singular: string;
-    StartedDate: string;
-    TimeZoneDisplayName: string;
-    TimeZoneId: string;
-    Url: string;
-    Visible: number;
-    Websites: string;
-    BatchCode: string;
-    PublicKey: string;
-    _id: string;
-    _key: number;
-    _rev: string;
-    CreateDate: string;
-    UpdateDate: string;
-    Version: string;
-}
+import { CustomerDetailResponse, CustomerListEntry, PaginatedResponse } from '../../types';
 
 /**
  * Customer API Service
@@ -57,5 +17,29 @@ export const customerApi = {
 
         // Use core authService to fetch (automatically injects Token & Headers)
         return await authService.get<CustomerDetailResponse>(queryPath);
+    },
+
+    /**
+     * Fetch paginated list of customers
+     * @param params Query parameters for filtering and pagination
+     */
+    getCustomerList: async (params: {
+        page?: number;
+        pageSize?: number;
+        search?: string;
+        status?: number;
+    }): Promise<PaginatedResponse<CustomerListEntry>> => {
+        const endpoint = process.env.NEXT_PUBLIC_API_CUSTOMER_LIST || '/api/v2/customer/list';
+
+        // Construct URL with query parameters
+        const query = new URLSearchParams();
+        if (params.page) query.append('page', params.page.toString());
+        if (params.pageSize) query.append('pageSize', params.pageSize.toString());
+        if (params.search) query.append('search', params.search);
+        if (params.status) query.append('status', params.status.toString());
+
+        const queryPath = `${endpoint}?${query.toString()}`;
+
+        return await authService.get<PaginatedResponse<CustomerListEntry>>(queryPath);
     }
 };
