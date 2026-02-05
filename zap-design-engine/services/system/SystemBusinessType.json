@@ -1,0 +1,5 @@
+[
+{ "_id" : "SystemBussinessType/22930791", "_key" : 22930791, "_rev" : "_bXwhjAG--A", "BussinessType_en" : "Spa", "BussinessType_vi" : "Spa", "Id" : 2, "Visible" : 1, "OrderNo" : 2, "SystemBussinessTypeId" : 2 },
+{ "_id" : "SystemBussinessType/22930790", "_key" : 22930790, "_rev" : "_bXwhjAG---", "BussinessType_en" : "Restaurant", "BussinessType_vi" : "Restaurant", "Id" : 1, "Visible" : 1, "OrderNo" : 1, "SystemBussinessTypeId" : 1 },
+{ "_id" : "SystemBussinessType/22930792", "_key" : 22930792, "_rev" : "_bXwhjAG--C", "BussinessType_en" : "Shop", "BussinessType_vi" : "Shop", "Id" : 3, "Visible" : 1, "OrderNo" : 3, "SystemBussinessTypeId" : 3 }
+]

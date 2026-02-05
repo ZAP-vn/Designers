@@ -15,11 +15,17 @@ All login-related API requests MUST include:
 - `Accept-Language: [lang]` (default to `vi`)
 - `X-Language: [lang]` (default to `vi`)
 
-### 3. Security
+### 3. Security & Validation
+- **MerchantName Validation**: MUST be auto-filtered to lowercase alphanumeric and hyphens `[a-z0-9-]`. NO uppercase or special characters.
+- **Email Validation**: MUST contain `@` and follow a valid email regex pattern. Cannot be empty.
 - **Token Storage**: Store successful `AccessToken` in `localStorage` or secure cookies.
 - **Data Protection**: Ensure passwords are never logged or displayed in plain text.
 - **Show/Hide**: Password fields MUST include a visibility toggle (Eye icon).
 
-### 4. User Feedback
-- Show loading indicators (spinners/pulse effects) during requests.
-- Provide clear error messages for failed login attempts (e.g., "Failed to fetch" or server-side error messages).
+### 4. UI Components & Feedback
+- **Standard UI**: MUST use `StandardInput` for all form fields and the project's `Button` atom for submission.
+- **Theming**: MUST inherit colors and fonts from the global `ThemeState`.
+- **Validation Display**: Client-side errors MUST be displayed in red using the `errorText` prop of `StandardInput`.
+- **Focus Order**: MUST automatically focus the first field with an error when submission fails validation.
+- **API Errors**: Extract and display the `Message` (PascalCase) from failed API responses.
+- **Loading State**: Show "Authenticating..." and disable the button during the request.
