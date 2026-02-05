@@ -189,12 +189,12 @@ export interface ProjectConfig {
     merchantName: string;
     projectName: string;
     version?: string;
-    businessType: string;
+    businessType: string | number;
     timezone: string;
-    language: string;
-    country: string;
-    dateFormat: string;
-    timeFormat: string;
+    language: string | number;
+    country: string | number;
+    dateFormat: string | number;
+    timeFormat: string | number;
     assets?: {
         fonts: FontFamilyEntry[];
     };

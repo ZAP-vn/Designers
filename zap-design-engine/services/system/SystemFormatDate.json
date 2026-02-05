@@ -1,0 +1,10 @@
+[
+{ "_id" : "SystemFormatDate/3466645", "_key" : 3466645, "_rev" : "_cSlpkiS--G", "DisplayFormat" : "M-d-yyyy", "Id" : 6, "Visible" : 1, "SystemFormatDateId" : 6, "OrderNo" : 6 },
+{ "_id" : "SystemFormatDate/3466642", "_key" : 3466642, "_rev" : "_cSlpkiS--M", "DisplayFormat" : "dd-MM-yy", "Id" : 3, "Visible" : 1, "SystemFormatDateId" : 3, "OrderNo" : 3 },
+{ "_id" : "SystemFormatDate/3466644", "_key" : 3466644, "_rev" : "_cSlpkiS--E", "DisplayFormat" : "MM-dd-yyyy", "Id" : 5, "Visible" : 1, "SystemFormatDateId" : 5, "OrderNo" : 5 },
+{ "_id" : "SystemFormatDate/3466643", "_key" : 3466643, "_rev" : "_cSlpkiS--C", "DisplayFormat" : "d-M-yy", "Id" : 4, "Visible" : 1, "SystemFormatDateId" : 4, "OrderNo" : 4 },
+{ "_id" : "SystemFormatDate/3466641", "_key" : 3466641, "_rev" : "_cSlpkiS--A", "DisplayFormat" : "d-M-yyyy", "Id" : 2, "Visible" : 1, "SystemFormatDateId" : 2, "OrderNo" : 2 },
+{ "_id" : "SystemFormatDate/3466646", "_key" : 3466646, "_rev" : "_cSlpkiS--I", "DisplayFormat" : "MM-dd-yy", "Id" : 7, "Visible" : 1, "SystemFormatDateId" : 7, "OrderNo" : 7 },
+{ "_id" : "SystemFormatDate/3466640", "_key" : 3466640, "_rev" : "_cSlpkiS---", "DisplayFormat" : "dd-MM-yyyy", "Id" : 1, "Visible" : 1, "SystemFormatDateId" : 1, "OrderNo" : 1 },
+{ "_id" : "SystemFormatDate/3466647", "_key" : 3466647, "_rev" : "_cSlpkiS--K", "DisplayFormat" : "M-d-yy", "Id" : 8, "Visible" : 1, "SystemFormatDateId" : 8, "OrderNo" : 8 }
+]

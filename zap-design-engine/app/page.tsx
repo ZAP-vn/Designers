@@ -108,6 +108,7 @@ const DEFAULT_THEME: ThemeState = {
 };
 
 const DEFAULT_CONFIG: ProjectConfig = {
+    merchantName: '',
     projectName: '',
     businessType: '',
     timezone: '',
@@ -129,7 +130,8 @@ const Home: React.FC = () => {
         setMerchantOverride,
         activeDocPageId, setActiveDocPageId,
         docPages, setDocPages,
-        userRole
+        userRole,
+        logout
     } = useStore();
 
     // --- Local UI State ---
@@ -754,6 +756,7 @@ const Home: React.FC = () => {
                 onSaveVersion={() => saveToHistory(true)}
                 onExportJson={handleCurrentExport}
                 onWorkspaceSettings={() => setIsAiSettingsOpen(true)}
+                onLogout={logout}
             />
 
             <AiSettingsModal

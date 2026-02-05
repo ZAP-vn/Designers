@@ -43,6 +43,7 @@ interface ZapState {
     setIsSetupComplete: (val: boolean) => void;
     setAuthData: (data: any | null) => void;
     setCustomerDetail: (detail: any | null) => void;
+    logout: () => void;
 
     // Helpers
     updateComputedTheme: () => void;
@@ -166,6 +167,22 @@ export const useStore = create<ZapState>()(
             setIsSetupComplete: (val) => set({ isSetupComplete: val }),
             setAuthData: (data) => set({ authData: data }),
             setCustomerDetail: (detail) => set({ customerDetail: detail }),
+            logout: () => {
+                set({
+                    isAuthenticated: false,
+                    isSetupComplete: false,
+                    authData: null,
+                    customerDetail: null,
+                    projectConfig: DEFAULT_CONFIG,
+                    merchantOverride: {},
+                    docPages: [],
+                    activeTab: 'ui-kit',
+                    activeDocPageId: 'overview'
+                });
+                // Clear persist storage manually just in case
+                localStorage.removeItem('zap-design-storage');
+                localStorage.removeItem('accessToken');
+            },
 
             updateComputedTheme: () => {
                 const { masterConfig, merchantOverride } = get();

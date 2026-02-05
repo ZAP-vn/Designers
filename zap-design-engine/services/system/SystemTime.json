@@ -1,0 +1,14 @@
+[
+    {
+        "Time": "12h (AM/PM)",
+        "Visible": 1,
+        "OrderNo": 2,
+        "TimeId": 2
+    },
+    {
+        "Time": "24h",
+        "Visible": 1,
+        "OrderNo": 1,
+        "TimeId": 1
+    }
+]

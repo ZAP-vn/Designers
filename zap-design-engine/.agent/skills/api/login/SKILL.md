@@ -14,10 +14,15 @@ This skill provides expert guidance for implementing the Login V4 authentication
   - `authService.ts`: Core generic methods (GET, POST, etc.) with automatic token handling.
   - `login.service.ts`: Domain-specific service calling core methods.
 - **Header Standardization**: Ensure `X-Language` and `Accept-Language` are present.
+- **UI Atomic Integration**: Use `StandardInput` for validation feedback and `Button` atom for theme-consistent actions.
+- **Auto-Focus Logic**: Implement `useRef` to focus the first field with an error on submission.
+- **API Error Parsing**: Always check for `Message` (PascalCase) in error responses.
 
 ## Triggers
 
 - When implementing or debugging "Login V4" or general authentication.
+- When applying ZAP Design standards to forms.
+- When handling MerchantName filtering `[a-z0-9-]`.
 - When resolving "CORS" or "Failed to fetch" errors.
 - When organizing API service layers.
 
@@ -30,6 +35,6 @@ This skill provides expert guidance for implementing the Login V4 authentication
 
 ## Reference Patterns
 
-- See `rules/login/standard.md` for CORS and Header constraints.
-- See `workflows/login/process.md` for step-by-step proxy and service setup.
-- See `task-groups/login/implementation.md` for the full implementation checklist.
+- See `rules/login/*.md` for CORS and Header constraints.
+- See `workflows/login/*.md` for step-by-step proxy and service setup.
+- See `task-groups/login/*.md` for the full implementation checklist.

@@ -28,7 +28,9 @@ const getHeaders = (customHeaders: Record<string, string> = {}) => {
 const handleResponse = async (response: Response) => {
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `API Error: ${response.status}`);
+        // API trả về PascalCase "Message" theo format của bạn
+        const errorMessage = errorData.Message || errorData.message || `API Error: ${response.status}`;
+        throw new Error(errorMessage);
     }
     return response.json();
 };

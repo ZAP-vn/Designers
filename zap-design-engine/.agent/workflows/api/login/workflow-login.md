@@ -62,6 +62,44 @@ export const loginApi = {
 };
 ```
 
+### 4. Component Implementation
+Use `StandardInput` for validation and consistent theming.
+
+**A. Merchant Name Filtering**:
+```tsx
+const handleMerchantChange = (e) => {
+    const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    setMerchantName(value);
+};
+```
+
+**B. Form Structure**:
+- Use `noValidate` on the form.
+- Use `useRef` for each input.
+- Use the project's `Button` atom.
+
+### 5. Validation & Auto-Focus
+Focus the first field with an error:
+```tsx
+const validate = () => {
+    const newErrors = {};
+    let firstRef = null;
+    if (!merchantName) { 
+        newErrors.mName = 'Error'; 
+        firstRef = merchantRef; 
+    }
+    setErrors(newErrors);
+    if (firstRef?.current) firstRef.current.focus();
+    return Object.keys(newErrors).length === 0;
+};
+```
+
+### 6. API Error Extraction
+Ensure `authService` handles PascalCase `Message`:
+```tsx
+const errorMessage = errorData.Message || errorData.message || 'Error occurred';
+```
+
 ### Step 4: UI Integration (`LoginScreen.tsx`)
 - Implement `MerchantName`, `UserName`, `Password` fields.
 - Use `lucide-react` icons: `Building2`, `Mail`, `Lock`, `Eye`, `EyeOff`.

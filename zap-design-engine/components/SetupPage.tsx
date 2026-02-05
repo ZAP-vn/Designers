@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
     Upload, Check, Zap, MapPin, ChevronDown, Search, Calendar, Clock, Sparkles, Briefcase, Globe,
-    ArrowLeft, Info, AlertTriangle, Wand2, Download, UploadCloud, Lock, ArrowRight
+    ArrowLeft, Info, AlertTriangle, Wand2, Download, UploadCloud, Lock, ArrowRight, Building2
 } from 'lucide-react';
 import { GoogleGenAI, Type as GeminiType } from "@google/genai";
 import Header from './Header';
@@ -10,6 +10,14 @@ import { ProjectConfig, UiKitData, ThemeState, ProjectFile } from '../types';
 import { ContainerDevWrapper } from './DevDocBanner';
 import { useStore } from '../store';
 import { customerApi } from '../services/customer/customer.service';
+import { StandardInput } from './atoms/StandardInput';
+import { Button } from './atoms/Button';
+import businessTypesData from '../services/system/SystemBusinessType.json';
+import countriesData from '../services/system/SystemCountry.json';
+import languagesData from '../services/system/SystemLanguage.json';
+import timezonesData from '../services/system/SystemTimeZone.json';
+import dateFormatsData from '../services/system/SystemFormatDate.json';
+import timeFormatsData from '../services/system/SystemTime.json';
 
 interface SetupPageProps {
     onComplete: (config: ProjectConfig) => void;
@@ -34,6 +42,11 @@ const fileToBase64 = (file: File): Promise<string> => {
     });
 };
 
+interface DropdownOption {
+    label: string;
+    value: string | number;
+}
+
 // Reusable Custom Dropdown Component
 const CustomDropdown = ({
     label,
@@ -49,9 +62,9 @@ const CustomDropdown = ({
     required = false
 }: {
     label: string;
-    value: string;
-    options: string[];
-    onChange: (val: string) => void;
+    value: string | number;
+    options: (string | DropdownOption)[];
+    onChange: (val: any) => void;
     placeholder?: string;
     searchable?: boolean;
     icon?: React.ElementType;
@@ -94,9 +107,15 @@ const CustomDropdown = ({
         }
     }, [isOpen, searchable]);
 
+    const normalizedOptions: DropdownOption[] = options.map(opt =>
+        typeof opt === 'string' ? { label: opt, value: opt } : opt
+    );
+
     const filteredOptions = searchable
-        ? options.filter(opt => opt.toLowerCase().includes(searchTerm.toLowerCase()))
-        : options;
+        ? normalizedOptions.filter(opt => opt.label.toLowerCase().includes(searchTerm.toLowerCase()))
+        : normalizedOptions;
+
+    const selectedOption = normalizedOptions.find(opt => opt.value === value);
 
     return (
         <div className="relative space-y-1.5">
@@ -117,7 +136,7 @@ const CustomDropdown = ({
                         boxShadow: isOpen ? `0 0 0 4px ${safeTheme.primary}20` : 'none'
                     }}
                 >
-                    <span className="truncate pr-8 text-sm font-medium">{value || placeholder}</span>
+                    <span className="truncate pr-8 text-sm font-medium">{selectedOption?.label || placeholder}</span>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform duration-200" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
                         <ChevronDown size={18} />
                     </div>
@@ -152,17 +171,17 @@ const CustomDropdown = ({
                             {filteredOptions.length > 0 ? (
                                 filteredOptions.map((opt) => (
                                     <div
-                                        key={opt}
+                                        key={opt.value}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onChange(opt);
+                                            onChange(opt.value);
                                             onToggle(); // Close on select
                                         }}
                                         className="px-4 py-2.5 hover:bg-gray-50 cursor-pointer text-sm flex items-center justify-between transition-colors"
-                                        style={{ color: value === opt ? safeTheme.tertiaryBtnText : safeTheme.darkText }}
+                                        style={{ color: value === opt.value ? safeTheme.tertiaryBtnText : safeTheme.darkText }}
                                     >
-                                        <span className={value === opt ? 'font-bold' : 'font-medium'}>{opt}</span>
-                                        {value === opt && <Check size={14} style={{ color: safeTheme.tertiaryBtnText }} />}
+                                        <span className={value === opt.value ? 'font-bold' : 'font-medium'}>{opt.label}</span>
+                                        {value === opt.value && <Check size={14} style={{ color: safeTheme.tertiaryBtnText }} />}
                                     </div>
                                 ))
                             ) : (
@@ -230,7 +249,6 @@ const SetupPage: React.FC<SetupPageProps> = ({
     const [useAI, setUseAI] = useState(false);
 
     const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-    const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
     const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -270,10 +288,10 @@ const SetupPage: React.FC<SetupPageProps> = ({
                     ...prev,
                     merchantName: customerDetail.MerchantName || prev.merchantName,
                     projectName: customerDetail.BusinessName || prev.projectName,
-                    businessType: customerDetail.BussinessTypeId ? "Finance & Banking" : prev.businessType,
-                    country: customerDetail.Country === 704 ? "Vietnam" : prev.country,
-                    timezone: customerDetail.TimeZoneDisplayName || prev.timezone,
-                    language: customerDetail.LanguageId?.includes('Vietnamese') ? "Vietnamese" : (customerDetail.LanguageId?.includes('English') ? "English" : prev.language)
+                    businessType: customerDetail.BussinessTypeId || prev.businessType,
+                    country: customerDetail.Country || prev.country,
+                    timezone: customerDetail.TimeZoneId || prev.timezone,
+                    language: customerDetail.LanguageId ? (typeof customerDetail.LanguageId === 'number' ? customerDetail.LanguageId : prev.language) : prev.language
                 }));
                 return;
             }
@@ -287,10 +305,10 @@ const SetupPage: React.FC<SetupPageProps> = ({
                     ...prev,
                     merchantName: data.MerchantName || '',
                     projectName: data.BusinessName || prev.projectName,
-                    businessType: data.BussinessTypeId ? "Finance & Banking" : prev.businessType,
-                    country: data.Country === 704 ? "Vietnam" : "United States",
-                    timezone: data.TimeZoneDisplayName || prev.timezone,
-                    language: data.LanguageId?.includes('Vietnamese') ? "Vietnamese" : "English"
+                    businessType: data.BussinessTypeId || prev.businessType,
+                    country: data.Country || 704,
+                    timezone: data.TimeZoneId || "Central Standard Time",
+                    language: data.LanguageId && typeof data.LanguageId === 'number' ? data.LanguageId : 136
                 }));
             } catch (err) {
                 console.error("Failed to fetch customer data", err);
@@ -308,40 +326,25 @@ const SetupPage: React.FC<SetupPageProps> = ({
 
     useFontLoader(safeTheme.fontFamily);
 
-    const getFocusStyle = (id: string) => {
-        const style: React.CSSProperties = {
-            borderColor: '#E5E7EB',
-            fontFamily: safeTheme.fontFamily
-        };
-        if (focusedInput === id && !readOnly) {
-            style.borderColor = safeTheme.primary;
-            style.boxShadow = `0 0 0 4px ${safeTheme.primary}20`;
-        }
-        return style;
-    };
+    const businessTypes = businessTypesData.map(item => ({ label: item.BussinessType_en, value: item.SystemBussinessTypeId }));
+    const countries = countriesData.map(item => ({ label: item.Country, value: item.CountryId }));
+    const languages = languagesData.map(item => ({ label: item.DisplayName, value: item.Id }));
+    const timezones = timezonesData.map(item => ({ label: item.DisplayName, value: item.TimeZoneId }));
+    const dateFormats = dateFormatsData.map(item => ({ label: item.DisplayFormat, value: item.SystemFormatDateId }));
+    const timeFormats = timeFormatsData.map(item => ({ label: item.Time, value: item.TimeId }));
 
-    const businessTypes = ["Retail & E-commerce", "Healthcare & Medical", "Finance & Banking", "Education & Learning", "Real Estate & Housing", "Travel & Hospitality", "Food & Beverage", "Fitness & Wellness", "Technology & SaaS", "Entertainment & Media"];
-    const countries = ["United States", "Vietnam", "Germany", "United Kingdom", "Russia", "Japan", "France", "China", "India", "Australia", "United Arab Emirates", "Brazil", "Canada", "South Korea", "Singapore", "Italy", "Spain", "Netherlands", "Sweden", "Switzerland", "Mexico", "Argentina", "South Africa"];
-    const timezones = ["(UTC-08:00) Pacific Time (US & Canada)", "(UTC-05:00) Eastern Time (US & Canada)", "(UTC+00:00) UTC", "(UTC+01:00) Central European Time", "(UTC+03:00) Moscow Standard Time", "(UTC+04:00) Dubai", "(UTC+05:30) India Standard Time", "(UTC+07:00) Bangkok / Hanoi / Jakarta", "(UTC+08:00) Singapore / China", "(UTC+09:00) Japan Standard Time", "(UTC+10:00) Australian Eastern Time"];
-    const languages = ["English", "Vietnamese", "German", "Spanish", "French", "Chinese", "Japanese", "Russian", "Portuguese", "Korean", "Arabic"];
-
-    const getCountryDefaults = (country: string) => {
-        switch (country) {
-            case 'United States': return { timezone: "(UTC-08:00) Pacific Time (US & Canada)", language: "English", dateFormat: "MM/DD/YYYY", timeFormat: "12h (AM/PM)", dateOptions: ["MM/DD/YYYY", "YYYY-MM-DD", "DD/MM/YYYY"], timeOptions: ["12h (AM/PM)", "24h"] };
-            case 'Vietnam': return { timezone: "(UTC+07:00) Bangkok / Hanoi / Jakarta", language: "Vietnamese", dateFormat: "DD/MM/YYYY", timeFormat: "24h", dateOptions: ["DD/MM/YYYY", "YYYY-MM-DD", "YYYY/MM/DD"], timeOptions: ["24h", "12h (AM/PM)"] };
-            case 'Germany': return { timezone: "(UTC+01:00) Central European Time", language: "German", dateFormat: "DD.MM.YYYY", timeFormat: "24h", dateOptions: ["DD.MM.YYYY", "DD/MM/YYYY", "YYYY-MM-DD"], timeOptions: ["24h", "12h (AM/PM)"] };
-            default: return { timezone: "", language: "English", dateFormat: "DD/MM/YYYY", timeFormat: "24h", dateOptions: ["DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "DD.MM.YYYY"], timeOptions: ["24h", "12h (AM/PM)"] };
+    const getCountryDefaults = (countryId: number | string) => {
+        switch (Number(countryId)) {
+            case 840: return { timezone: "Central Standard Time", language: 136, dateFormat: 5, timeFormat: 2 };
+            case 704: return { timezone: "SE Asia Standard Time", language: 139, dateFormat: 1, timeFormat: 1 };
+            case 276: return { timezone: "W. Europe Standard Time", language: 47, dateFormat: 1, timeFormat: 1 };
+            default: return { timezone: "", language: 136, dateFormat: 1, timeFormat: 1 };
         }
     };
-
-    const [availableDateFormats, setAvailableDateFormats] = useState<string[]>([]);
-    const [availableTimeFormats, setAvailableTimeFormats] = useState<string[]>([]);
 
     useEffect(() => {
         if (formData.country) {
             const defaults = getCountryDefaults(formData.country);
-            setAvailableDateFormats(defaults.dateOptions);
-            setAvailableTimeFormats(defaults.timeOptions);
 
             const isInitialLoad = initialConfig && initialConfig.country === formData.country && initialConfig.dateFormat === formData.dateFormat;
             if (!isInitialLoad) {
@@ -353,9 +356,6 @@ const SetupPage: React.FC<SetupPageProps> = ({
                     timeFormat: defaults.timeFormat
                 }));
             }
-        } else {
-            setAvailableDateFormats([]);
-            setAvailableTimeFormats([]);
         }
     }, [formData.country, initialConfig]);
 
@@ -594,54 +594,36 @@ const SetupPage: React.FC<SetupPageProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="md:col-span-2">
                         <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "MerchantNameInput", type: "Field", value: formData.merchantName, filePath: "state.formData.merchantName" }}>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Merchant Name <span className="text-red-500">*</span></label>
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder="e.g. pho24"
-                                    className={`w-full border bg-white outline-none transition-all text-sm font-medium ${readOnly ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
-                                    style={{
-                                        padding: `${safeTheme.btnPaddingY}px ${safeTheme.btnPaddingX}px`,
-                                        borderRadius: `${safeTheme.borderRadius}px`,
-                                        color: readOnly ? safeTheme.grayText : safeTheme.darkText,
-                                        ...getFocusStyle('merchantName')
-                                    }}
-                                    value={formData.merchantName}
-                                    onChange={e => setFormData({ ...formData, merchantName: e.target.value })}
-                                    onFocus={() => setFocusedInput('merchantName')}
-                                    onBlur={() => setFocusedInput(null)}
-                                    disabled={isExtracting || readOnly}
-                                />
-                            </div>
+                            <StandardInput
+                                required
+                                themeState={safeTheme}
+                                label="Merchant Name"
+                                icon={Building2}
+                                placeholder="e.g. pho24"
+                                value={formData.merchantName}
+                                onChange={e => setFormData({ ...formData, merchantName: e.target.value })}
+                                disabled={isExtracting || readOnly}
+                                readOnly={true}
+                            />
                         </ContainerDevWrapper>
                     </div>
 
                     <div className="space-y-6">
                         <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "ProjectNameInput", type: "Field", value: formData.projectName, filePath: "state.formData.projectName" }}>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Project Name <span className="text-red-500">*</span></label>
-                                <input
-                                    required
-                                    type="text"
-                                    placeholder="e.g. Fintech Dashboard v2"
-                                    className={`w-full border bg-white outline-none transition-all text-sm font-medium ${readOnly ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
-                                    style={{
-                                        padding: `${safeTheme.btnPaddingY}px ${safeTheme.btnPaddingX}px`,
-                                        borderRadius: `${safeTheme.borderRadius}px`,
-                                        color: readOnly ? safeTheme.grayText : safeTheme.darkText,
-                                        ...getFocusStyle('projectName')
-                                    }}
-                                    value={formData.projectName}
-                                    onChange={e => setFormData({ ...formData, projectName: e.target.value })}
-                                    onFocus={() => setFocusedInput('projectName')}
-                                    onBlur={() => setFocusedInput(null)}
-                                    disabled={isExtracting || readOnly}
-                                />
-                            </div>
+                            <StandardInput
+                                required
+                                themeState={safeTheme}
+                                label="Project Name"
+                                icon={Zap}
+                                placeholder="e.g. Fintech Dashboard v2"
+                                value={formData.projectName}
+                                onChange={e => setFormData({ ...formData, projectName: e.target.value })}
+                                disabled={isExtracting || readOnly}
+                                readOnly={readOnly}
+                            />
                         </ContainerDevWrapper>
 
-                        <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "BusinessTypeSelect", type: "Field", value: formData.businessType, filePath: "state.formData.businessType" }}>
+                        <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "BusinessTypeSelect", type: "Field", value: String(formData.businessType), filePath: "state.formData.businessType" }}>
                             <CustomDropdown
                                 label="Business Type"
                                 value={formData.businessType}
@@ -780,7 +762,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
                 <div className="w-full h-px bg-gray-100 my-8"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "CountrySelect", type: "Field", value: formData.country, filePath: "state.formData.country" }}>
+                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "CountrySelect", type: "Field", value: String(formData.country), filePath: "state.formData.country" }}>
                         <CustomDropdown
                             label="Country"
                             value={formData.country}
@@ -797,7 +779,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
                         />
                     </ContainerDevWrapper>
 
-                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "LanguageSelect", type: "Field", value: formData.language, filePath: "state.formData.language" }}>
+                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "LanguageSelect", type: "Field", value: String(formData.language), filePath: "state.formData.language" }}>
                         <CustomDropdown
                             label="Language"
                             value={formData.language}
@@ -812,11 +794,11 @@ const SetupPage: React.FC<SetupPageProps> = ({
                         />
                     </ContainerDevWrapper>
 
-                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "DateFormatSelect", type: "Field", value: formData.dateFormat, filePath: "state.formData.dateFormat" }}>
+                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "DateFormatSelect", type: "Field", value: String(formData.dateFormat), filePath: "state.formData.dateFormat" }}>
                         <CustomDropdown
                             label="Date Format"
                             value={formData.dateFormat}
-                            options={availableDateFormats}
+                            options={dateFormats}
                             onChange={(val) => setFormData({ ...formData, dateFormat: val })}
                             placeholder="Format"
                             icon={Calendar}
@@ -827,11 +809,11 @@ const SetupPage: React.FC<SetupPageProps> = ({
                         />
                     </ContainerDevWrapper>
 
-                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "TimeFormatSelect", type: "Field", value: formData.timeFormat, filePath: "state.formData.timeFormat" }}>
+                    <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "TimeFormatSelect", type: "Field", value: String(formData.timeFormat), filePath: "state.formData.timeFormat" }}>
                         <CustomDropdown
                             label="Time Format"
                             value={formData.timeFormat}
-                            options={availableTimeFormats}
+                            options={timeFormats}
                             onChange={(val) => setFormData({ ...formData, timeFormat: val })}
                             placeholder="Format"
                             icon={Clock}
@@ -843,7 +825,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
                     </ContainerDevWrapper>
 
                     <div className="md:col-span-2">
-                        <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "TimezoneSelect", type: "Field", value: formData.timezone, filePath: "state.formData.timezone" }}>
+                        <ContainerDevWrapper showClassNames={showClassNames} identity={{ displayName: "TimezoneSelect", type: "Field", value: String(formData.timezone), filePath: "state.formData.timezone" }}>
                             <CustomDropdown
                                 label="Time Zone"
                                 value={formData.timezone}
@@ -862,24 +844,14 @@ const SetupPage: React.FC<SetupPageProps> = ({
 
                 <div className="pt-8 border-t border-gray-100 flex justify-end">
                     {!readOnly && (
-                        <button
+                        <Button
                             type="submit"
                             disabled={isExtracting || !formData.country || !formData.projectName || !formData.businessType}
-                            className="font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                            style={{
-                                backgroundColor: safeTheme.primary,
-                                color: safeTheme.primaryBtnText,
-                                borderRadius: `${safeTheme.borderRadius}px`,
-                                padding: `${safeTheme.btnPaddingY}px ${safeTheme.btnPaddingX * 1.5}px`
-                            }}
-                        >
-                            <span>{useAI ? "Generate & Continue" : "Next Step"}</span>
-                            {isExtracting ? (
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <ArrowRight size={18} />
-                            )}
-                        </button>
+                            themeState={safeTheme}
+                            className="font-bold shadow-lg"
+                            label={useAI ? "Generate & Continue" : "Next Step"}
+                            iconTrailing={isExtracting ? undefined : ArrowRight}
+                        />
                     )}
                 </div>
 

@@ -20,6 +20,7 @@ interface HeaderProps {
   onSaveVersion?: () => void;
   onExportJson?: () => void;
   onWorkspaceSettings?: () => void;
+  onLogout?: () => void;
   // Role Props
   userRole?: 'admin' | 'merchant';
   setUserRole?: (role: 'admin' | 'merchant') => void;
@@ -54,6 +55,7 @@ const Header: React.FC<HeaderProps> = ({
   onSaveVersion,
   onExportJson,
   onWorkspaceSettings,
+  onLogout,
   title = "ZAP",
   theme,
   layout = 'minimal',
@@ -136,6 +138,10 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="h-px bg-gray-100 my-1"></div>
                 <button onClick={() => { onWorkspaceSettings?.(); setIsProjectMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-700 rounded-lg flex items-center gap-2.5 transition-colors">
                   <Settings size={16} /> Workspace Settings
+                </button>
+                <div className="h-px bg-gray-100 my-1"></div>
+                <button onClick={() => { onLogout?.(); setIsProjectMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2.5 transition-colors">
+                  <LogOut size={16} /> Log Out
                 </button>
               </div>
             )}
@@ -344,7 +350,10 @@ const Header: React.FC<HeaderProps> = ({
                     <HelpCircle size={16} /> Support
                   </button>
                   <div className="h-px bg-gray-100 my-1"></div>
-                  <button className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2.5 transition-colors">
+                  <button
+                    onClick={() => { onLogout?.(); setIsUserMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2.5 transition-colors"
+                  >
                     <LogOut size={16} /> Sign Out
                   </button>
                 </div>
