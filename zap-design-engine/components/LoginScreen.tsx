@@ -26,7 +26,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, themeState }) => {
     const emailRef = React.useRef<HTMLInputElement>(null);
     const passwordRef = React.useRef<HTMLInputElement>(null);
 
-    const { setAuthData } = useStore();
+    const { setAuthData, setIsSetupComplete } = useStore();
 
     // Reset general error when form changes
     useEffect(() => {
@@ -98,7 +98,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, themeState }) => {
                 MerchantName: merchantName,
                 IsRemember: true
             });
+
+            // Lưu dữ liệu Auth và reset Setup Status
             setAuthData(response);
+            setIsSetupComplete(false); // Buộc người dùng vào trang Setup sau khi login
+
             onLogin();
         } catch (err: any) {
             // Mapping API errors to specific fields if possible, or general error

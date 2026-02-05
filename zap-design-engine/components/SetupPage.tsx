@@ -306,7 +306,7 @@ const SetupPage: React.FC<SetupPageProps> = ({
                     merchantName: data.MerchantName || '',
                     projectName: data.BusinessName || prev.projectName,
                     businessType: data.BussinessTypeId || prev.businessType,
-                    country: data.Country || 840,
+                    country: data.Country || 704,
                     timezone: data.TimeZoneId || "Central Standard Time",
                     language: data.LanguageId && typeof data.LanguageId === 'number' ? data.LanguageId : 136
                 }));
